@@ -29,6 +29,7 @@ jobs:
         run: |
           python -m py_compile desktop/safesearch_enforcer.py
           python -m py_compile desktop/desktop_agent.py
+          python -m py_compile desktop/parent_desktop_monitor.py
           python -m py_compile cloud/analytics/behavioral_engine.py
 
       - name: Run E2E Simulation Test Suite
