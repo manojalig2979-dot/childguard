@@ -16,3 +16,7 @@ flutter pub get
 # 2. Run in debug mode on connected device or simulator
 flutter run
 ```
+
+---
+*Built by **NDTechHub**, a part of **NavDiva Group** • [Repository](https://github.com/manojalig2979-dot/childguard.git)*
+

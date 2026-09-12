@@ -1,4 +1,5 @@
 # ChildGuard AI: Intelligent Real-Time Parental Supervision & Child Safety Platform
+> **An NDTechHub Innovation • A Part of NavDiva Group**
 
 <div align="center">
 
@@ -7,13 +8,13 @@
 [![Deploy Web Command Center](https://github.com/manojalig2979-dot/childguard/actions/workflows/deploy_pages.yml/badge.svg)](https://github.com/manojalig2979-dot/childguard/actions/workflows/deploy_pages.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**[🌐 Live Web Command Center](https://manojalig2979-dot.github.io/childguard/)** • **[📱 Download Android APK](https://github.com/manojalig2979-dot/childguard/actions/workflows/build_apk.yml)** • **[📖 Architecture Blueprint](ChildGuard.txt)**
+**[🌐 Live Web Showcase](https://manojalig2979-dot.github.io/childguard/)** • **[📱 Download Android APK](https://manojalig2979-dot.github.io/childguard/downloads/app-debug.apk)** • **[📦 GitHub Repository](https://github.com/manojalig2979-dot/childguard.git)**
 
 </div>
 
 ---
 
-ChildGuard is an end-to-end multi-platform parental protection and digital safety ecosystem operating on an **Edge-AI + Cloud Ingestion** architecture compliant with the **India Digital Personal Data Protection (DPDP) Act 2023** and **Google Play Families Policy**.
+ChildGuard is an end-to-end multi-platform parental protection and digital safety ecosystem engineered by **NDTechHub** (part of **NavDiva Group**). Operating on an **Edge-AI + Cloud Ingestion** architecture compliant with the **India Digital Personal Data Protection (DPDP) Act 2023** and **Google Play Families Policy**.
 
 ---
 
@@ -104,3 +105,14 @@ flutter run
 - **India DPDP Act (2023) Section 9**: Explicit parental consent verified prior to telemetry activation.
 - **Privacy by Design**: Chat texts and keystrokes are evaluated exclusively on-device; only flagged safety triggers with contextual snippets are transmitted over TLS 1.3.
 - **Automated Data Minimization**: Geolocation breadcrumbs older than 30 days are automatically purged via scheduled PostGIS routines.
+
+---
+
+## 🏢 Organization & Attribution
+**ChildGuard AI** is researched, engineered, and maintained by **NDTechHub**, a technology and artificial intelligence division of **NavDiva Group**.
+
+- **Official Git Repository**: [https://github.com/manojalig2979-dot/childguard.git](https://github.com/manojalig2979-dot/childguard.git)
+- **Live Showcase & Download Center**: [https://manojalig2979-dot.github.io/childguard/](https://manojalig2979-dot.github.io/childguard/)
+- **Parent Company**: **NavDiva Group**
+- **Technology Division**: **NDTechHub**
+- **License**: MIT Open Source License
