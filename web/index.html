@@ -3,217 +3,711 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ChildGuard AI - Parent Command Center & Live Simulator</title>
+  <title>ChildGuard AI — Intelligent Edge Parental Supervision & Threat Shield</title>
+  <meta name="description" content="ChildGuard AI is a state-of-the-art multi-platform parental supervision system featuring real-time PostGIS polygonal geofencing, on-device AI predator detection, Windows SafeSearch enforcement, and stealth hardware SOS distress triggers.">
+  <meta name="keywords" content="ChildGuard, Parental Control, Child Safety, AI Predator Detection, PostGIS Geofencing, Device Admin Shield, Silent SOS, SafeSearch Enforcer">
+  <meta name="author" content="ChildGuard AI Team">
+  <meta property="og:title" content="ChildGuard AI — Intelligent Edge Parental Supervision">
+  <meta property="og:description" content="Next-generation parental safety platform with sub-second alert latency, military-grade anti-uninstall protection, and DPDP compliance.">
+  <meta property="og:image" content="assets/hero_mockup.jpg">
+  <meta property="og:type" content="website">
+
+  <!-- Fonts: Inter & Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <!-- Leaflet CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet CSS for Live Simulator -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  
+  <!-- Main Stylesheet -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Top Navigation Header -->
-  <header class="app-header">
-    <div class="logo-area">
-      <div class="logo-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
-      </div>
-      <div>
-        <h1 class="logo-title">ChildGuard AI</h1>
-        <span class="logo-subtitle">Parent Supervision Command Center</span>
-      </div>
-    </div>
+  <!-- Sticky Navbar -->
+  <header class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#" class="brand-link" aria-label="ChildGuard AI Home">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">ChildGuard <span class="brand-ai">AI</span></span>
+          <span class="brand-badge">v1.0 Pro</span>
+        </div>
+      </a>
 
-    <div class="header-status">
-      <div class="status-pill online" id="brokerStatus">
-        <span class="pulse-dot"></span>
-        <span>MQTT BROKER: CONNECTED</span>
+      <nav class="nav-menu" id="navMenu">
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#how-it-works" class="nav-link">Architecture</a>
+        <a href="#simulator" class="nav-link">Live Demo</a>
+        <a href="#comparison" class="nav-link">Comparison</a>
+        <a href="#downloads" class="nav-link">Downloads</a>
+        <a href="#faq" class="nav-link">FAQ</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="#simulator" class="btn btn-secondary btn-sm nav-demo-btn">
+          <span class="live-dot"></span>
+          Try Demo
+        </a>
+        <a href="#downloads" class="btn btn-primary btn-sm">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Get App
+        </a>
+        <a href="https://github.com/manojalig2979-dot/childguard" target="_blank" rel="noopener" class="btn btn-icon" title="View on GitHub" aria-label="GitHub Repository">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+        </a>
       </div>
-      <button class="btn-lock" id="btnRemoteLock">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-        </svg>
-        Instant Remote Lock
-      </button>
     </div>
   </header>
 
-  <!-- Main Dashboard Workspace -->
-  <div class="dashboard-grid">
+  <!-- Hero Section -->
+  <section class="hero-section" id="hero">
+    <div class="hero-glow hero-glow-1"></div>
+    <div class="hero-glow hero-glow-2"></div>
 
-    <!-- Left: Map & Live Spatial Tracking -->
-    <main class="map-column">
-      <div class="card map-card">
-        <div class="card-header">
-          <div class="header-left">
-            <h2>Live Spatial Tracking & Geofences</h2>
-            <span class="device-tag">Target: Aarav (child_dev_99182)</span>
+    <div class="container hero-container">
+      <div class="hero-content">
+        <div class="pill-badge">
+          <span class="pill-badge-pulse"></span>
+          <span>Next-Generation Edge Safety Architecture</span>
+        </div>
+
+        <h1 class="hero-title">
+          Intelligent Child Safety & Edge Supervision, <span class="gradient-text">Engineered for Reality.</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          ChildGuard AI unites millisecond PostGIS polygon geofencing, on-device AI predator detection, Windows SafeSearch enforcement, and stealth hardware SOS triggers into a unified parental shield that survives tampering, reboots, and network dropouts.
+        </p>
+
+        <!-- Key Metrics Bar -->
+        <div class="hero-metrics">
+          <div class="metric-card">
+            <span class="metric-num">&lt; 0.8s</span>
+            <span class="metric-label">Alert Latency</span>
           </div>
-          <div class="telemetry-bar">
-            <div class="telemetry-item">
-              <span class="label">SPEED</span>
-              <span class="value" id="dispSpeed">0.0 m/s</span>
-            </div>
-            <div class="telemetry-item">
-              <span class="label">COORDINATES</span>
-              <span class="value" id="dispCoords">28.6145° N, 77.2120° E</span>
-            </div>
-            <div class="telemetry-item">
-              <span class="label">BATTERY</span>
-              <span class="value" id="dispBattery">84%</span>
-            </div>
+          <div class="metric-card">
+            <span class="metric-num">100%</span>
+            <span class="metric-label">Anti-Uninstall Shield</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-num">DPDP '23</span>
+            <span class="metric-label">Compliant Privacy</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-num">&lt; 1.8%</span>
+            <span class="metric-label">Hourly Battery Draw</span>
           </div>
         </div>
 
-        <div id="map" class="map-canvas"></div>
-
-        <!-- Map Legend -->
-        <div class="map-legend">
-          <div class="legend-item">
-            <span class="color-dot safe-school"></span>
-            <span>School Safe Zone</span>
-          </div>
-          <div class="legend-item">
-            <span class="color-dot safe-home"></span>
-            <span>Home Safe Zone</span>
-          </div>
-          <div class="legend-item">
-            <span class="color-dot danger-zone"></span>
-            <span>Industrial Danger Zone</span>
-          </div>
-          <div class="legend-item">
-            <span class="color-dot child-pos"></span>
-            <span>Live Child Location</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Live Simulator Controls -->
-      <div class="card sim-card">
-        <div class="card-header">
-          <h2>Interactive Telemetry & Threat Simulator</h2>
-          <span class="badge-accent">Click to test live engine responses</span>
-        </div>
-        <div class="sim-actions">
-          <button class="btn-sim safe" id="simSchool">
-            <span class="icon">🏫</span>
-            <span>Walk Inside School</span>
-            <small>Inside Safe Zone</small>
-          </button>
-          <button class="btn-sim warning" id="simExit">
-            <span class="icon">🚶</span>
-            <span>Exit Safe Zone</span>
-            <small>Trigger SAFE_ZONE_EXIT</small>
-          </button>
-          <button class="btn-sim danger" id="simDanger">
-            <span class="icon">⚠️</span>
-            <span>Enter Danger Zone</span>
-            <small>Trigger DANGER_BREACH</small>
-          </button>
-          <button class="btn-sim threat" id="simChat">
-            <span class="icon">💬</span>
-            <span>Simulate Predator Chat</span>
-            <small>Sniffer Keyword Alarm</small>
-          </button>
-          <button class="btn-sim sos" id="simSos">
-            <span class="icon">🚨</span>
-            <span>Trigger Hardware SOS</span>
-            <small>Triple-Tap Volume Down</small>
-          </button>
-        </div>
-      </div>
-    </main>
-
-    <!-- Right: Threat Alarms & AI Behavioral Report -->
-    <aside class="sidebar-column">
-
-      <!-- AI Safety Score Card -->
-      <div class="card ai-card">
-        <div class="ai-header">
-          <div class="score-circle">
-            <svg viewBox="0 0 36 36" class="circular-chart">
-              <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-              <path class="circle" stroke-dasharray="94, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+        <div class="hero-cta-group">
+          <a href="#downloads" class="btn btn-primary btn-lg">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
             </svg>
-            <div class="score-text">
-              <span class="num">94</span>
-              <span class="sub">/ 100</span>
-            </div>
-          </div>
-          <div class="ai-info">
-            <span class="badge-optimal">OPTIMAL SAFETY</span>
-            <h3>Weekly Protection Index</h3>
-            <p>96.4% safe-zone adherence with zero danger zone violations.</p>
-          </div>
-        </div>
-
-        <div class="app-balance-bar">
-          <div class="bar-labels">
-            <span>App Time Balance</span>
-            <span>18.5 hrs/week</span>
-          </div>
-          <div class="multi-progress">
-            <div class="seg edu" style="width: 42%;" title="Education 42%"></div>
-            <div class="seg chat" style="width: 26%;" title="Family Chat 26%"></div>
-            <div class="seg video" style="width: 20%;" title="Video 20%"></div>
-            <div class="seg game" style="width: 12%;" title="Gaming 12%"></div>
-          </div>
-          <div class="legend-row">
-            <span><i class="dot edu"></i> Edu (42%)</span>
-            <span><i class="dot chat"></i> Chat (26%)</span>
-            <span><i class="dot video"></i> Video (20%)</span>
-            <span><i class="dot game"></i> Games (12%)</span>
-          </div>
+            Download Free Agent APK
+          </a>
+          <a href="#simulator" class="btn btn-secondary btn-lg">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            Launch Interactive Simulator
+          </a>
         </div>
       </div>
 
-      <!-- Real-Time Safety Threat Feed -->
-      <div class="card threats-card">
-        <div class="card-header">
-          <h2>Safety Threat Interceptions</h2>
-          <span class="badge-count" id="threatCount">0 Alerts</span>
+      <!-- Hero Visual Showcase -->
+      <div class="hero-showcase">
+        <div class="showcase-frame">
+          <img src="assets/hero_mockup.jpg" alt="ChildGuard AI Parental Supervision Dashboard & Mobile Safety App" class="showcase-img" id="heroMockupImg" width="1280" height="720">
+          
+          <!-- Floating Glassmorphic Badges -->
+          <div class="floating-badge badge-top">
+            <div class="badge-icon-safe">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="badge-title">Perimeter Active: School Safe Zone</div>
+              <div class="badge-sub">GPS Latency: 42ms • Accuracy: ±3m</div>
+            </div>
+          </div>
+
+          <div class="floating-badge badge-bottom">
+            <div class="badge-icon-danger">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </div>
+            <div>
+              <div class="badge-title">AI Threat Sniffer Intercept</div>
+              <div class="badge-sub">High-Risk Stranger Pattern Flagged</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Value Pillars / Core Features Section -->
+  <section class="section features-section" id="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Military-Grade Defense Matrix</span>
+        <h2 class="section-title">Built to Outsmart Bypassers & Protect in Real Time</h2>
+        <p class="section-desc">Traditional parental control apps are easily uninstalled, disabled in task managers, or delayed by 15 minutes. ChildGuard AI deploys deep OS-level hooks, hardware triggers, and spatial intelligence.</p>
+      </div>
+
+      <div class="features-grid">
+        <!-- Feature 1 -->
+        <div class="feature-card">
+          <div class="feature-icon icon-shield">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <h3 class="feature-name">Anti-Uninstall Hardware Lock</h3>
+          <p class="feature-text">Operates as a verified Android <code>DeviceAdminReceiver</code> and Accessibility guardian. Prevents uninstallation, forces auto-restart on boot, blocks safe mode evasion, and immediately alerts parents on tamper attempts.</p>
+          <div class="feature-badge">Android Device Admin</div>
         </div>
 
-        <div class="threats-list" id="threatsList">
-          <div class="empty-state" id="emptyState">
-            <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#10B981" stroke-width="2">
+        <!-- Feature 2 -->
+        <div class="feature-card">
+          <div class="feature-icon icon-map">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+              <line x1="8" y1="2" x2="8" y2="18"/>
+              <line x1="16" y1="6" x2="16" y2="22"/>
+            </svg>
+          </div>
+          <h3 class="feature-name">Sub-Second PostGIS Geofencing</h3>
+          <p class="feature-text">High-precision PostgreSQL/PostGIS spatial evaluation using <code>ST_Contains</code>. Tracks polygonal Safe Zones (School, Home) and Prohibited Danger Zones (Railtracks, Construction Sites) with instant sub-second push notifications.</p>
+          <div class="feature-badge">PostGIS 15 Spatial Engine</div>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="feature-card">
+          <div class="feature-icon icon-radar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+            </svg>
+          </div>
+          <h3 class="feature-name">AI Predator & Threat Sniffer</h3>
+          <p class="feature-text">Autonomous background notification sniffer scanning incoming text in WhatsApp, Snapchat, and Instagram. Flags grooming keywords, coercion, predator phrases, and dangerous meetups without invading healthy private chats.</p>
+          <div class="feature-badge">On-Device Regex & NLP</div>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="feature-card">
+          <div class="feature-icon icon-sos">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18.36 6.64a9 9 0 1 1-12.73 0"/>
+              <line x1="12" y1="2" x2="12" y2="12"/>
+            </svg>
+          </div>
+          <h3 class="feature-name">Silent Hardware Distress SOS</h3>
+          <p class="feature-text">Children in danger don't have time to unlock screens. A stealth triple-tap on the physical Volume Down key immediately transmits live GPS coordinates, battery metrics, and emergency distress signals over MQTT with silent haptic feedback.</p>
+          <div class="feature-badge">Physical Hardware Key Hook</div>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="feature-card">
+          <div class="feature-icon icon-desktop">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+              <line x1="8" y1="21" x2="16" y2="21"/>
+              <line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+          </div>
+          <h3 class="feature-name">Windows SafeSearch & Task Watchdog</h3>
+          <p class="feature-text">Desktop agent enforces SafeSearch VIP redirects on Google, YouTube, Bing, and DuckDuckGo. Sinkholes 10,000+ adult/gambling domains to loopback (<code>127.0.0.1</code>) and uses Win32 APIs to terminate unauthorized gaming/apps.</p>
+          <div class="feature-badge">Win32 API & DNS Sinkhole</div>
+        </div>
+
+        <!-- Feature 6 -->
+        <div class="feature-card">
+          <div class="feature-icon icon-privacy">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2a10 10 0 0 0-10 10c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/>
+            </svg>
+          </div>
+          <h3 class="feature-name">DPDP 2023 Digital Privacy Core</h3>
+          <p class="feature-text">Encrypted edge persistence with SQLCipher 256-bit AES. Automated 30-day data retention pruner purges obsolete telemetry logs. Zero third-party ad networks, zero tracking brokers, and fully self-hostable backend.</p>
+          <div class="feature-badge">SQLCipher + Auto-Prune</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Live Simulator & Command Center -->
+  <section class="section simulator-section" id="simulator">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Interactive Online Sandbox</span>
+        <h2 class="section-title">Test the Live ChildGuard AI Engine Right Now</h2>
+        <p class="section-desc">Experience real-time spatial perimeter evaluation, danger zone alarms, simulated WhatsApp chat interception, and remote device lock directly from this browser terminal.</p>
+      </div>
+
+      <div class="simulator-wrapper">
+        <!-- Map Canvas Card -->
+        <div class="card sim-map-card">
+          <div class="card-header">
+            <div class="sim-header-left">
+              <div class="device-avatar">A</div>
+              <div>
+                <h3 class="sim-device-name">Target: Aarav's Phone <span class="status-badge-live">ONLINE</span></h3>
+                <span class="sim-device-sub">Device ID: child_agent_in_991 • Daemon: Active</span>
+              </div>
+            </div>
+
+            <div class="telemetry-deck">
+              <div class="telemetry-chip">
+                <span class="chip-label">SPEED</span>
+                <span class="chip-val" id="dispSpeed">0.0 m/s</span>
+              </div>
+              <div class="telemetry-chip">
+                <span class="chip-label">COORDINATES</span>
+                <span class="chip-val" id="dispCoords">28.6145° N, 77.2120° E</span>
+              </div>
+              <div class="telemetry-chip">
+                <span class="chip-label">BATTERY</span>
+                <span class="chip-val" id="dispBattery">84%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Leaflet Map Container -->
+          <div id="map" class="live-map-canvas" style="height: 420px;"></div>
+
+          <!-- Map Legend -->
+          <div class="map-legend">
+            <div class="legend-item"><span class="legend-dot safe-school"></span><span>School Zone (Safe)</span></div>
+            <div class="legend-item"><span class="legend-dot safe-home"></span><span>Home Zone (Safe)</span></div>
+            <div class="legend-item"><span class="legend-dot danger-zone"></span><span>Construction Site (Danger)</span></div>
+            <div class="legend-item"><span class="legend-dot child-pos"></span><span>Live Child GPS Pin</span></div>
+          </div>
+        </div>
+
+        <!-- Controls & Threat Feed Column -->
+        <div class="sim-sidebar">
+          <!-- Simulation Triggers Card -->
+          <div class="card sim-controls-card">
+            <div class="card-header">
+              <h3 class="card-title">Live Scenario Triggers</h3>
+              <span class="hint-text">Trigger event & inspect engine</span>
+            </div>
+
+            <div class="trigger-buttons-grid">
+              <button class="sim-btn" id="btnSchool">
+                <span class="btn-icon">🏫</span>
+                <div class="btn-meta">
+                  <strong>Inside School Zone</strong>
+                  <small>Normal safe telemetry</small>
+                </div>
+              </button>
+
+              <button class="sim-btn" id="btnExit">
+                <span class="btn-icon">🚶</span>
+                <div class="btn-meta">
+                  <strong>School Perimeter Exit</strong>
+                  <small>Dispatches boundary alert</small>
+                </div>
+              </button>
+
+              <button class="sim-btn danger" id="btnDanger">
+                <span class="btn-icon">⚠️</span>
+                <div class="btn-meta">
+                  <strong>Danger Zone Breach</strong>
+                  <small>Critical PostGIS alarm</small>
+                </div>
+              </button>
+
+              <button class="sim-btn warning" id="btnChat">
+                <span class="btn-icon">💬</span>
+                <div class="btn-meta">
+                  <strong>Predator Chat Flag</strong>
+                  <small>WhatsApp message scan</small>
+                </div>
+              </button>
+
+              <button class="sim-btn critical" id="btnSos">
+                <span class="btn-icon">🚨</span>
+                <div class="btn-meta">
+                  <strong>Triple-Tap SOS Panic</strong>
+                  <small>Silent emergency dispatch</small>
+                </div>
+              </button>
+
+              <button class="sim-btn lock" id="btnRemoteLock">
+                <span class="btn-icon">🔒</span>
+                <div class="btn-meta">
+                  <strong id="lblLockStatus">Instant Screen Lock</strong>
+                  <small>Remote device enforcement</small>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Real-Time Event Stream Log -->
+          <div class="card sim-log-card">
+            <div class="card-header">
+              <div class="sim-log-title">
+                <span class="pulse-dot"></span>
+                <span>Encrypted Safety Feed</span>
+              </div>
+              <button class="btn-text" id="btnClearLogs">Clear</button>
+            </div>
+            
+            <div class="threat-log-stream" id="threatFeed">
+              <!-- Logs populated dynamically by app.js -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Architecture & How It Works -->
+  <section class="section arch-section" id="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">High-Throughput Ecosystem</span>
+        <h2 class="section-title">How ChildGuard AI Operates End-to-End</h2>
+        <p class="section-desc">Designed with decoupled edge daemons, zero-loss MQTT QoS 1 telemetry buffers, and instantaneous parent notification dispatch.</p>
+      </div>
+
+      <div class="arch-flow-grid">
+        <div class="arch-card">
+          <div class="arch-step">01</div>
+          <div class="arch-icon">📱</div>
+          <h3 class="arch-title">Edge Daemons</h3>
+          <p class="arch-text">Android Service and Windows Agent monitor location, notifications, and processes. When offline, events buffer inside encrypted SQLCipher storage.</p>
+          <ul class="arch-list">
+            <li>Fused Location GPS</li>
+            <li>Accessibility Inspection</li>
+            <li>Win32 Process Watchdog</li>
+          </ul>
+        </div>
+
+        <div class="arch-arrow">➔</div>
+
+        <div class="arch-card highlight">
+          <div class="arch-step">02</div>
+          <div class="arch-icon">☁️</div>
+          <h3 class="arch-title">EMQX & Go Ingestor</h3>
+          <p class="arch-text">Cloud ingestor processes 100,000+ msgs/sec. Compares coordinates with PostGIS polygon safe/danger zones using sub-millisecond spatial queries.</p>
+          <ul class="arch-list">
+            <li>PostGIS <code>ST_Contains</code></li>
+            <li>DPDP 30-Day Auto-Pruner</li>
+            <li>Instant MQTT Publish</li>
+          </ul>
+        </div>
+
+        <div class="arch-arrow">➔</div>
+
+        <div class="arch-card">
+          <div class="arch-step">03</div>
+          <div class="arch-icon">🛡️</div>
+          <h3 class="arch-title">Parent Controller</h3>
+          <p class="arch-text">Flutter mobile application and Web Command Center instantly receive alerts, display live OpenStreetMap tracking, and issue remote lockdown commands.</p>
+          <ul class="arch-list">
+            <li>Push Notifications</li>
+            <li>AI Behavioral Scorecards</li>
+            <li>Remote Screen Freeze</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparison Table -->
+  <section class="section comparison-section" id="comparison">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Uncompromising Safety</span>
+        <h2 class="section-title">ChildGuard AI vs Traditional Parental Apps</h2>
+        <p class="section-desc">See why tech-savvy parents and safety researchers choose ChildGuard AI over legacy commercial software.</p>
+      </div>
+
+      <div class="table-container">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Feature Capability</th>
+              <th class="col-highlight">ChildGuard AI</th>
+              <th>Google Family Link</th>
+              <th>Bark / Life360</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Anti-Uninstall Hardware Lock</strong></td>
+              <td class="col-highlight"><span class="check">✓</span> Protected (Device Admin + Accessibility)</td>
+              <td><span class="cross">✗</span> Easily disabled by child in settings</td>
+              <td><span class="cross">✗</span> Simple app uninstall</td>
+            </tr>
+            <tr>
+              <td><strong>Geofence Spatial Precision</strong></td>
+              <td class="col-highlight"><span class="check">✓</span> Sub-second PostGIS Polygonal</td>
+              <td><span class="cross">✗</span> Circular approximations (5-15 min lag)</td>
+              <td><span class="cross">✗</span> Delayed polling intervals</td>
+            </tr>
+            <tr>
+              <td><strong>Silent Distress SOS Trigger</strong></td>
+              <td class="col-highlight"><span class="check">✓</span> Triple-tap Volume Down key (stealth)</td>
+              <td><span class="cross">✗</span> Not available</td>
+              <td><span class="cross">✗</span> Requires unlocking phone & app</td>
+            </tr>
+            <tr>
+              <td><strong>Windows SafeSearch & Sinkhole</strong></td>
+              <td class="col-highlight"><span class="check">✓</span> Native Win32 loopback sinkhole</td>
+              <td><span class="cross">✗</span> Mobile only</td>
+              <td><span class="cross">✗</span> Browser extension (easily removed)</td>
+            </tr>
+            <tr>
+              <td><strong>Privacy & Data Retention</strong></td>
+              <td class="col-highlight"><span class="check">✓</span> DPDP 2023 Compliant (30-day auto-purge)</td>
+              <td><span class="cross">✗</span> Account tracking profile</td>
+              <td><span class="cross">✗</span> Aggregated data telemetry</td>
+            </tr>
+            <tr>
+              <td><strong>Self-Hosting & Open Source</strong></td>
+              <td class="col-highlight"><span class="check">✓</span> 100% Free, Open Source, Docker Ready</td>
+              <td><span class="cross">✗</span> Proprietary cloud lock-in</td>
+              <td><span class="cross">✗</span> $14+/month recurring subscription</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Download & Installation Center -->
+  <section class="section downloads-section" id="downloads">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Instant Multi-Platform Download</span>
+        <h2 class="section-title">Install ChildGuard AI on Your Devices Today</h2>
+        <p class="section-desc">Download compiled binaries, APKs, and deployment configs. Everything is 100% free and open-source.</p>
+      </div>
+
+      <div class="download-grid">
+        <!-- Download Card 1: Android APK -->
+        <div class="download-card featured">
+          <div class="dl-badge">Primary Child Agent</div>
+          <div class="dl-icon">🤖</div>
+          <h3 class="dl-name">Android Child Agent</h3>
+          <p class="dl-version">Version 1.0 Pro • 19.8 MB • Android 8.0+</p>
+          <p class="dl-desc">The core child daemon service with Device Admin anti-uninstall, GPS tracker, notification sniffer, and silent volume SOS.</p>
+          
+          <div class="dl-actions">
+            <a href="downloads/app-debug.apk" download="ChildGuard-Agent-v1.0.apk" class="btn btn-primary btn-block">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Download APK Direct (19.8 MB)
+            </a>
+            <a href="https://github.com/manojalig2979-dot/childguard/actions/workflows/build_apk.yml" target="_blank" rel="noopener" class="btn btn-outline btn-block btn-sm">
+              View Cloud Build on GitHub Actions
+            </a>
+          </div>
+
+          <div class="install-steps">
+            <strong>Quick 3-Step Sideload Guide:</strong>
+            <ol>
+              <li>Download APK to child's Android phone.</li>
+              <li>Tap file and tap <em>"Allow Install from Unknown Sources"</em>.</li>
+              <li>Open ChildGuard and complete the 7-step Onboarding Wizard.</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Download Card 2: Windows Desktop Agent -->
+        <div class="download-card">
+          <div class="dl-badge">PC & Laptop Protection</div>
+          <div class="dl-icon">💻</div>
+          <h3 class="dl-name">Windows Desktop Watchdog</h3>
+          <p class="dl-version">Standalone EXE & Python • Windows 10/11</p>
+          <p class="dl-desc">Enforces SafeSearch VIP redirects across Chrome/Edge/Firefox, sinkholes adult domains to loopback, and kills blocked gaming tasks.</p>
+
+          <div class="code-box">
+            <code>git clone https://github.com/manojalig2979-dot/childguard.git<br>cd childguard/desktop<br>python build_exe.py</code>
+          </div>
+
+          <div class="dl-actions">
+            <a href="https://github.com/manojalig2979-dot/childguard/tree/main/desktop" target="_blank" rel="noopener" class="btn btn-secondary btn-block">
+              Get Windows Agent Scripts
+            </a>
+          </div>
+        </div>
+
+        <!-- Download Card 3: Flutter Parent App -->
+        <div class="download-card">
+          <div class="dl-badge">Parent Command Center</div>
+          <div class="dl-icon">📱</div>
+          <h3 class="dl-name">Flutter Parent Mobile App</h3>
+          <p class="dl-version">Flutter 3.x • Cross-Platform (Android/iOS)</p>
+          <p class="dl-desc">Interactive OpenStreetMap live tracking, polygon boundaries, real-time push alarms, remote device locking, and AI weekly safety scorecard.</p>
+
+          <div class="code-box">
+            <code>cd childguard/parent_app<br>flutter pub get<br>flutter run</code>
+          </div>
+
+          <div class="dl-actions">
+            <a href="https://github.com/manojalig2979-dot/childguard/tree/main/parent_app" target="_blank" rel="noopener" class="btn btn-secondary btn-block">
+              View Parent App Source
+            </a>
+          </div>
+        </div>
+
+        <!-- Download Card 4: Cloud Ingestor & Docker -->
+        <div class="download-card">
+          <div class="dl-badge">Self-Hosted Backend</div>
+          <div class="dl-icon">🐳</div>
+          <h3 class="dl-name">Docker Cloud Stack</h3>
+          <p class="dl-version">Docker Compose • PostGIS 15 + EMQX 5.3 + Go</p>
+          <p class="dl-desc">Deploy your own private, secure cloud broker and geofencing ingestor in 30 seconds with complete DPDP compliance.</p>
+
+          <div class="code-box">
+            <code>cd childguard/cloud<br>docker compose up -d</code>
+          </div>
+
+          <div class="dl-actions">
+            <a href="https://github.com/manojalig2979-dot/childguard/tree/main/cloud" target="_blank" rel="noopener" class="btn btn-secondary btn-block">
+              Explore Cloud Architecture
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="section faq-section" id="faq">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Frequently Asked Questions</span>
+        <h2 class="section-title">Everything You Need to Know</h2>
+      </div>
+
+      <div class="faq-accordion">
+        <details class="faq-item" open>
+          <summary class="faq-question">
+            <span>Can my child easily uninstall or disable ChildGuard AI?</span>
+            <span class="faq-arrow">▼</span>
+          </summary>
+          <div class="faq-answer">
+            <p>No. ChildGuard AI is enrolled as an Android <strong>Device Administrator</strong> and registers an Accessibility Service lock. Attempting to deactivate device admin requires a parental password, and the service immediately dispatches an emergency tamper notification to parents before survival daemons re-arm the protection.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>How does the silent distress SOS trigger work?</span>
+            <span class="faq-arrow">▼</span>
+          </summary>
+          <div class="faq-answer">
+            <p>If a child is in distress, they do not need to unlock the phone or open an app. Rapidly clicking the physical Volume Down button 3 times within 2 seconds instantly captures current GPS coordinates and battery level, delivers a subtle stealth vibration to let the child know help was called, and broadcasts a critical emergency distress alarm to parents.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>How does ChildGuard AI prevent battery drain?</span>
+            <span class="faq-arrow">▼</span>
+          </summary>
+          <div class="faq-answer">
+            <p>ChildGuard AI utilizes Google Play Services Fused Location Provider with adaptive movement detection. When the child is stationary (e.g. at school or home), GPS sampling shifts to low-power geofence triggers, keeping hourly battery usage well below 1.8%.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>Is my child's location or chat data sold or shared?</span>
+            <span class="faq-arrow">▼</span>
+          </summary>
+          <div class="faq-answer">
+            <p>Never. ChildGuard AI complies with the Digital Personal Data Protection (DPDP) Act 2023. Chat inspection occurs strictly on-device without uploading personal conversations. Furthermore, historical telemetry is automatically purged every 30 days, and parents can completely self-host their own Docker backend.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-brand">
+        <div class="brand-link">
+          <div class="brand-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               <path d="m9 12 2 2 4-4"/>
             </svg>
-            <h4>All Systems Protected</h4>
-            <p>No active threats or geofence breaches detected.</p>
           </div>
+          <span class="brand-name">ChildGuard <span class="brand-ai">AI</span></span>
+        </div>
+        <p class="footer-tagline">Open-source, intelligent edge parental safety and spatial protection platform.</p>
+        <div class="footer-status">
+          <span class="pulse-dot"></span>
+          <span>SYSTEM CLOUD: OPERATIONAL</span>
         </div>
       </div>
 
-    </aside>
-
-  </div>
-
-  <!-- Device Lock Modal Overlay -->
-  <div class="lock-modal-overlay" id="lockModal">
-    <div class="lock-modal">
-      <div class="lock-icon-pulse">
-        <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#EF4444" stroke-width="2">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-        </svg>
+      <div class="footer-links-col">
+        <div class="footer-heading">Platform</div>
+        <a href="#features">Features Matrix</a>
+        <a href="#simulator">Live Sandbox Demo</a>
+        <a href="#downloads">Android APK (19.8 MB)</a>
+        <a href="#downloads">Windows Desktop Agent</a>
       </div>
-      <h2>Child Device Screen Locked</h2>
-      <p>Instant remote lock signal was broadcasted. The supervised device screen has been shut down and requires the master parent PIN to resume.</p>
-      <div class="lock-meta">
-        <span>Target: <strong>child_dev_99182</strong></span>
-        <span>Enforcement: <strong>DevicePolicyManager</strong></span>
+
+      <div class="footer-links-col">
+        <div class="footer-heading">Architecture</div>
+        <a href="#how-it-works">PostGIS Geofencing</a>
+        <a href="#how-it-works">EMQX MQTT Broker</a>
+        <a href="#how-it-works">SQLCipher Encryption</a>
+        <a href="#faq">DPDP 2023 Compliance</a>
       </div>
-      <button class="btn-unlock" id="btnDismissLock">Dismiss Alert</button>
+
+      <div class="footer-links-col">
+        <div class="footer-heading">Open Source</div>
+        <a href="https://github.com/manojalig2979-dot/childguard" target="_blank" rel="noopener">GitHub Repository</a>
+        <a href="https://github.com/manojalig2979-dot/childguard/actions" target="_blank" rel="noopener">CI/CD Pipeline</a>
+        <a href="https://github.com/manojalig2979-dot/childguard/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+        <a href="https://github.com/manojalig2979-dot/childguard/blob/main/README.md" target="_blank" rel="noopener">Documentation</a>
+      </div>
     </div>
-  </div>
 
-  <!-- Leaflet JS -->
+    <div class="footer-bottom">
+      <div class="container footer-bottom-container">
+        <p>&copy; 2026 ChildGuard AI Project. Released under the MIT Open Source License.</p>
+        <p>Engineered for child digital safety, physical protection & parent peace of mind.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Leaflet & App JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="app.js"></script>
 </body>
