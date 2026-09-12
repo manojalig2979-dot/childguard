@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChildGuard AI - Parent Command Center & Live Simulator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <div class="logo-area">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="logo-title">ChildGuard AI</h1>
+        <span class="logo-subtitle">Parent Supervision Command Center</span>
+      </div>
+    </div>
+
+    <div class="header-status">
+      <div class="status-pill online" id="brokerStatus">
+        <span class="pulse-dot"></span>
+        <span>MQTT BROKER: CONNECTED</span>
+      </div>
+      <button class="btn-lock" id="btnRemoteLock">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        Instant Remote Lock
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Dashboard Workspace -->
+  <div class="dashboard-grid">
+
+    <!-- Left: Map & Live Spatial Tracking -->
+    <main class="map-column">
+      <div class="card map-card">
+        <div class="card-header">
+          <div class="header-left">
+            <h2>Live Spatial Tracking & Geofences</h2>
+            <span class="device-tag">Target: Aarav (child_dev_99182)</span>
+          </div>
+          <div class="telemetry-bar">
+            <div class="telemetry-item">
+              <span class="label">SPEED</span>
+              <span class="value" id="dispSpeed">0.0 m/s</span>
+            </div>
+            <div class="telemetry-item">
+              <span class="label">COORDINATES</span>
+              <span class="value" id="dispCoords">28.6145° N, 77.2120° E</span>
+            </div>
+            <div class="telemetry-item">
+              <span class="label">BATTERY</span>
+              <span class="value" id="dispBattery">84%</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="map" class="map-canvas"></div>
+
+        <!-- Map Legend -->
+        <div class="map-legend">
+          <div class="legend-item">
+            <span class="color-dot safe-school"></span>
+            <span>School Safe Zone</span>
+          </div>
+          <div class="legend-item">
+            <span class="color-dot safe-home"></span>
+            <span>Home Safe Zone</span>
+          </div>
+          <div class="legend-item">
+            <span class="color-dot danger-zone"></span>
+            <span>Industrial Danger Zone</span>
+          </div>
+          <div class="legend-item">
+            <span class="color-dot child-pos"></span>
+            <span>Live Child Location</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Simulator Controls -->
+      <div class="card sim-card">
+        <div class="card-header">
+          <h2>Interactive Telemetry & Threat Simulator</h2>
+          <span class="badge-accent">Click to test live engine responses</span>
+        </div>
+        <div class="sim-actions">
+          <button class="btn-sim safe" id="simSchool">
+            <span class="icon">🏫</span>
+            <span>Walk Inside School</span>
+            <small>Inside Safe Zone</small>
+          </button>
+          <button class="btn-sim warning" id="simExit">
+            <span class="icon">🚶</span>
+            <span>Exit Safe Zone</span>
+            <small>Trigger SAFE_ZONE_EXIT</small>
+          </button>
+          <button class="btn-sim danger" id="simDanger">
+            <span class="icon">⚠️</span>
+            <span>Enter Danger Zone</span>
+            <small>Trigger DANGER_BREACH</small>
+          </button>
+          <button class="btn-sim threat" id="simChat">
+            <span class="icon">💬</span>
+            <span>Simulate Predator Chat</span>
+            <small>Sniffer Keyword Alarm</small>
+          </button>
+          <button class="btn-sim sos" id="simSos">
+            <span class="icon">🚨</span>
+            <span>Trigger Hardware SOS</span>
+            <small>Triple-Tap Volume Down</small>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Right: Threat Alarms & AI Behavioral Report -->
+    <aside class="sidebar-column">
+
+      <!-- AI Safety Score Card -->
+      <div class="card ai-card">
+        <div class="ai-header">
+          <div class="score-circle">
+            <svg viewBox="0 0 36 36" class="circular-chart">
+              <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path class="circle" stroke-dasharray="94, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+            <div class="score-text">
+              <span class="num">94</span>
+              <span class="sub">/ 100</span>
+            </div>
+          </div>
+          <div class="ai-info">
+            <span class="badge-optimal">OPTIMAL SAFETY</span>
+            <h3>Weekly Protection Index</h3>
+            <p>96.4% safe-zone adherence with zero danger zone violations.</p>
+          </div>
+        </div>
+
+        <div class="app-balance-bar">
+          <div class="bar-labels">
+            <span>App Time Balance</span>
+            <span>18.5 hrs/week</span>
+          </div>
+          <div class="multi-progress">
+            <div class="seg edu" style="width: 42%;" title="Education 42%"></div>
+            <div class="seg chat" style="width: 26%;" title="Family Chat 26%"></div>
+            <div class="seg video" style="width: 20%;" title="Video 20%"></div>
+            <div class="seg game" style="width: 12%;" title="Gaming 12%"></div>
+          </div>
+          <div class="legend-row">
+            <span><i class="dot edu"></i> Edu (42%)</span>
+            <span><i class="dot chat"></i> Chat (26%)</span>
+            <span><i class="dot video"></i> Video (20%)</span>
+            <span><i class="dot game"></i> Games (12%)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-Time Safety Threat Feed -->
+      <div class="card threats-card">
+        <div class="card-header">
+          <h2>Safety Threat Interceptions</h2>
+          <span class="badge-count" id="threatCount">0 Alerts</span>
+        </div>
+
+        <div class="threats-list" id="threatsList">
+          <div class="empty-state" id="emptyState">
+            <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#10B981" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+            <h4>All Systems Protected</h4>
+            <p>No active threats or geofence breaches detected.</p>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+
+  <!-- Device Lock Modal Overlay -->
+  <div class="lock-modal-overlay" id="lockModal">
+    <div class="lock-modal">
+      <div class="lock-icon-pulse">
+        <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#EF4444" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </div>
+      <h2>Child Device Screen Locked</h2>
+      <p>Instant remote lock signal was broadcasted. The supervised device screen has been shut down and requires the master parent PIN to resume.</p>
+      <div class="lock-meta">
+        <span>Target: <strong>child_dev_99182</strong></span>
+        <span>Enforcement: <strong>DevicePolicyManager</strong></span>
+      </div>
+      <button class="btn-unlock" id="btnDismissLock">Dismiss Alert</button>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>

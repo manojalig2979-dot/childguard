@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  emqx:
+    image: emqx/emqx:5.3.2
+    container_name: childguard-mqtt-broker
+    restart: unless-stopped
+    ports:
+      - "1883:1883"      # MQTT TCP
+      - "8883:8883"      # MQTT TLS
+      - "8083:8083"      # MQTT WebSocket
+      - "8084:8084"      # MQTT WSS
+      - "18083:18083"    # EMQX Web Dashboard
+    environment:
+      - "EMQX_NODE_NAME=childguard_emqx@node.emqx"
+      - "EMQX_DASHBOARD__DEFAULT_USERNAME=admin"
+      - "EMQX_DASHBOARD__DEFAULT_PASSWORD=childguard_secret"
+    volumes:
+      - emqx_data:/opt/emqx/data
+
+  postgis:
+    image: postgis/postgis:15-3.3
+    container_name: childguard-postgis
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: childguard
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secure_db_pass
+    volumes:
+      - postgis_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/02_seed.sql:ro
+
+volumes:
+  emqx_data:
+  postgis_data:

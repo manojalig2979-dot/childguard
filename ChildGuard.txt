@@ -1,0 +1,1301 @@
+================================================================================
+CHILDGUARD AI: COMPLETE MULTI-PHASE ROADMAP & PRODUCTION CODE BLUEPRINT
+================================================================================
+System: Intelligent Real-time Parental Supervision & Child Safety Platform
+Target Ecosystem: 
+  - Android Client (Kotlin Native, Foreground Daemon, Accessibility, Device Admin)
+  - Desktop Client (Python & Windows Ctypes User32 API Hooks)
+  - Cloud Ingestion Engine (Golang High-Concurrency Broker & PostgreSQL/PostGIS)
+  - Parent Dashboard (Flutter / Dart Cross-Platform Controller)
+Regulatory Target: India Digital Personal Data Protection (DPDP) Act & Google Play Families Policy
+================================================================================
+
+TABLE OF CONTENTS
+--------------------------------------------------------------------------------
+1. MASTER ARCHITECTURAL SPECIFICATION & MULTI-PHASE ROADMAP
+   1.1 System Data Flow & Architecture
+   1.2 4-Phase Roadmap Timeline
+   1.3 Legal, Cryptographic & DPDP Compliance Details
+2. PHASE 1: ANDROID CORE CLIENT (FULL KOTLIN IMPLEMENTATION)
+   2.1 AndroidManifest.xml (Permissions & Privilege Declarations)
+   2.2 device_admin_policy.xml & GuardDeviceAdminReceiver.kt (Anti-Tamper Admin)
+   2.3 ChildGuardService.kt (Persistent Sticky Foreground Daemon)
+   2.4 LocationTracker.kt (Adaptive FusedLocation & Battery Management)
+   2.5 NotificationMonitorService.kt (Chat & SMS Keyword Sniffer)
+   2.6 UsageManager.kt (App Limits & Instant Lock Enforcer)
+   2.7 EncryptedAppDatabase.kt (Room + SQLCipher Encrypted Storage)
+   2.8 MqttBridge.kt (Bi-Directional Real-Time Communication)
+3. PHASE 1: CLOUD BACKEND & BROKER INFRASTRUCTURE
+   3.1 PostgreSQL + PostGIS Spatial Schema (schema.sql)
+   3.2 Golang Telemetry Ingestor & Alert Processor (main.go)
+4. PHASE 2: REAL-TIME SOCIAL MEDIA & VIDEO FILTERING ENGINE
+   4.1 accessibility_service_config.xml
+   4.2 SocialFeedInspectorService.kt (Accessibility Tree Reader & Auto-Skip)
+   4.3 layout_safety_overlay.xml (Visual Mask Banner)
+5. PHASE 3: CROSS-PLATFORM DESKTOP SURVEILLANCE AGENT (WINDOWS PC)
+   5.1 desktop_agent.py (Win32 API Active Window Inspector & Process Watcher)
+6. PHASE 4: PARENT CONTROLLER APPLICATION (FLUTTER / DART)
+   6.1 lib/main.dart (Live Tracking, Alert Feed & Remote Override UI)
+================================================================================
+
+================================================================================
+SECTION 1: MASTER ARCHITECTURAL SPECIFICATION & MULTI-PHASE ROADMAP
+================================================================================
+
+1.1 SYSTEM DATA FLOW & ARCHITECTURE
+--------------------------------------------------------------------------------
+ChildGuard operates on a hybrid "Edge-AI + Cloud Ingestion" model designed to 
+respect the sensitive nature of minor data:
+
+1. CHILD DEVICE (Android Native / Desktop):
+   - Continuous foreground execution via low-overhead system daemons.
+   - On-device text analysis and UI tree parsing (no raw keystrokes or chat logs 
+     are uploaded to cloud servers).
+   - Video feed and screen inspection using local frame sampling.
+   - Offline buffering in an AES-256 encrypted SQLite database (SQLCipher).
+
+2. CLOUD INFRASTRUCTURE:
+   - High-throughput EMQX MQTT broker handling bi-directional TLS 1.3 telemetry.
+   - Go ingestion daemons storing geolocations into PostgreSQL with PostGIS indexing.
+   - Spatial evaluation against pre-defined safe zones (schools, home, sports complex).
+
+3. PARENT APPLICATION (Flutter / Dart):
+   - Real-time live breadcrumb view with coordinates, speed, and battery metrics.
+   - Instant push notifications for keyword violations (bullying, predators, self-harm).
+   - One-touch emergency remote device lock.
+
+1.2 4-PHASE ROADMAP TIMELINE
+--------------------------------------------------------------------------------
+* PHASE 1 (Months 1 - 3): Foundational Daemon & Core Telemetry
+  - Device Administrator registration to block child uninstallation without parent PIN.
+  - Sticky foreground service running persistently across reboots.
+  - Fused location tracking with battery-aware polling intervals.
+  - NotificationListenerService to inspect incoming chat previews (WhatsApp, SMS).
+  - Cloud database deployment with spatial geofence indexing.
+
+* PHASE 2 (Months 4 - 6): Social Media Guardian & Video Interceptor
+  - Android AccessibilityService reading UI node hierarchies on Instagram, YouTube, etc.
+  - Floating System Alert Window overlay masking inappropriate visual feeds.
+  - Programmatic gesture dispatch (auto-swipe) to skip past toxic reels/shorts.
+  - On-device keyword classifier detecting vulgarity, self-harm, and predatory threats.
+
+* PHASE 3 (Months 7 - 9): Cross-Platform Desktop Client (PC / Windows)
+  - Background system service utilizing Win32 APIs for active window title monitoring.
+  - Blacklisted process termination (unauthorized browsers, torrents, gambling tools).
+  - Local loopback DNS filtering enforcing SafeSearch across search engines.
+
+* PHASE 4 (Months 10 - 12): Behavioral Safety & Panic Triggers
+  - Physical button SOS sequence (e.g. triple-tap volume keys) dispatching silent distress alert.
+  - Parent AI weekly behavioral summary (screen-time balance, focus metrics, alert history).
+
+1.3 LEGAL, CRYPTOGRAPHIC & DPDP COMPLIANCE (INDIA)
+--------------------------------------------------------------------------------
+- India DPDP Act 2023 Section 9: Explicit, verifiable parental consent is gathered 
+  during onboarding before activating any telemetry.
+- Privacy by Design: Full chat databases are never scraped; only safety alerts triggered 
+  by targeted keywords are synced.
+- Data Retention: Geolocation breadcrumbs are purged automatically after 30 days.
+
+================================================================================
+SECTION 2: PHASE 1 - NATIVE ANDROID CORE AGENT (KOTLIN)
+================================================================================
+
+2.1 ANDROID MANIFEST (AndroidManifest.xml)
+--------------------------------------------------------------------------------
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.childguard.agent">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:name=".ChildGuardApplication"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="ChildGuard Agent"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.ChildGuard">
+
+        <!-- Boot Auto-Start Receiver -->
+        <receiver
+            android:name=".receivers.BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Device Administration Receiver (Anti-Uninstall Shield) -->
+        <receiver
+            android:name=".receivers.GuardDeviceAdminReceiver"
+            android:description="@string/admin_description"
+            android:label="ChildGuard Admin"
+            android:permission="android.permission.BIND_DEVICE_ADMIN"
+            android:exported="true">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin_policy" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+                <action android:name="android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED" />
+                <action android:name="android.app.action.DEVICE_ADMIN_DISABLED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Core Persistent Daemon Service -->
+        <service
+            android:name=".services.ChildGuardService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="location|dataSync" />
+
+        <!-- Notification Sniffer Service -->
+        <service
+            android:name=".services.NotificationMonitorService"
+            android:label="ChildGuard Notification Monitor"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <!-- Accessibility Social Feed & Video Inspector -->
+        <service
+            android:name=".services.SocialFeedInspectorService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.view.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+    </application>
+</manifest>
+```
+
+--------------------------------------------------------------------------------
+2.2 DEVICE ADMIN POLICY & RECEIVER
+--------------------------------------------------------------------------------
+File: res/xml/device_admin_policy.xml
+```xml
+<device-admin xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-policies>
+        <force-lock />
+        <limit-password />
+        <watch-login />
+        <reset-password />
+    </uses-policies>
+</device-admin>
+```
+
+File: GuardDeviceAdminReceiver.kt
+```kotlin
+package com.childguard.agent.receivers
+
+import android.app.admin.DeviceAdminReceiver
+import android.content.Context
+import android.content.Intent
+
+class GuardDeviceAdminReceiver : DeviceAdminReceiver() {
+
+    override fun onEnabled(context: Context, intent: Intent) {
+        super.onEnabled(context, intent)
+    }
+
+    override fun onDisableRequested(context: Context, intent: Intent): CharSequence? {
+        // Warn the child that deactivating protection will immediately alert parents
+        return "ChildGuard protection requires an authorized parent master PIN to disable."
+    }
+
+    override fun onDisabled(context: Context, intent: Intent) {
+        super.onDisabled(context, intent)
+    }
+}
+```
+
+--------------------------------------------------------------------------------
+2.3 PERSISTENT STICKY FOREGROUND DAEMON (ChildGuardService.kt)
+--------------------------------------------------------------------------------
+```kotlin
+package com.childguard.agent.services
+
+import android.app.*
+import android.content.Context
+import android.content.Intent
+import android.graphics.Color
+import android.os.Build
+import android.os.IBinder
+import androidx.core.app.NotificationCompat
+import com.childguard.agent.R
+import com.childguard.agent.location.LocationTracker
+import com.childguard.agent.network.MqttBridge
+import com.childguard.agent.usage.UsageManager
+import kotlinx.coroutines.*
+
+class ChildGuardService : Service() {
+
+    private val serviceJob = SupervisorJob()
+    private val serviceScope = CoroutineScope(Dispatchers.Default + serviceJob)
+    
+    private lateinit var locationTracker: LocationTracker
+    private lateinit var mqttBridge: MqttBridge
+    private lateinit var usageManager: UsageManager
+
+    companion object {
+        private const val NOTIFICATION_CHANNEL_ID = "childguard_daemon_channel"
+        private const val NOTIFICATION_ID = 1001
+        
+        fun startService(context: Context) {
+            val intent = Intent(context, ChildGuardService::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(intent)
+            } else {
+                context.startService(intent)
+            }
+        }
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        createNotificationChannel()
+        startForeground(NOTIFICATION_ID, buildForegroundNotification())
+
+        locationTracker = LocationTracker(this)
+        mqttBridge = MqttBridge(this)
+        usageManager = UsageManager(this)
+
+        initializeSubsystems()
+    }
+
+    private fun initializeSubsystems() {
+        serviceScope.launch {
+            mqttBridge.connect()
+
+            // Start adaptive location tracking
+            locationTracker.startTracking { locationData ->
+                serviceScope.launch {
+                    mqttBridge.publishLocation(locationData)
+                }
+            }
+
+            // Periodic App Usage Poller (Runs every 60 seconds)
+            while (isActive) {
+                val currentForegroundApp = usageManager.getCurrentForegroundApp()
+                if (currentForegroundApp != null) {
+                    val isRestricted = usageManager.isAppRestricted(currentForegroundApp)
+                    if (isRestricted) {
+                        usageManager.enforceAppBlock(currentForegroundApp)
+                    }
+                }
+                delay(60_000L)
+            }
+        }
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                NOTIFICATION_CHANNEL_ID,
+                "ChildGuard Security Shield",
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = "Monitors device security parameters actively."
+                lightColor = Color.BLUE
+                lockscreenVisibility = Notification.VISIBILITY_SECRET
+            }
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannel(channel)
+        }
+    }
+
+    private fun buildForegroundNotification(): Notification {
+        return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+            .setContentTitle("ChildGuard Shield Active")
+            .setContentText("Parental device protection is safeguarding this device.")
+            .setSmallIcon(R.drawable.ic_shield)
+            .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .build()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // Sticky restart if killed by OS under low memory pressure
+        return START_STICKY
+    }
+
+    override fun onBind(intent: Intent?): IBinder? = null
+
+    override fun onDestroy() {
+        serviceJob.cancel()
+        locationTracker.stopTracking()
+        mqttBridge.disconnect()
+        super.onDestroy()
+    }
+}
+```
+
+--------------------------------------------------------------------------------
+2.4 ADAPTIVE LOCATION TRACKER (LocationTracker.kt)
+--------------------------------------------------------------------------------
+```kotlin
+package com.childguard.agent.location
+
+import android.annotation.SuppressLint
+import android.content.Context
+import android.location.Location
+import android.os.Looper
+import com.google.android.gms.location.*
+import org.json.JSONObject
+
+class LocationTracker(private val context: Context) {
+
+    private val fusedClient: FusedLocationProviderClient = 
+        LocationServices.getFusedLocationProviderClient(context)
+    private var locationCallback: LocationCallback? = null
+
+    @SuppressLint("MissingPermission")
+    fun startTracking(onLocationUpdate: (JSONObject) -> Unit) {
+        val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 30_000L)
+            .setMinUpdateIntervalMillis(15_000L)
+            .setMinUpdateDistanceMeters(10.0f)
+            .build()
+
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(result: LocationResult) {
+                val loc: Location = result.lastLocation ?: return
+                val payload = JSONObject().apply {
+                    put("latitude", loc.latitude)
+                    put("longitude", loc.longitude)
+                    put("accuracy", loc.accuracy)
+                    put("speed", loc.speed)
+                    put("timestamp", System.currentTimeMillis())
+                }
+                onLocationUpdate(payload)
+            }
+        }
+
+        fusedClient.requestLocationUpdates(request, locationCallback!!, Looper.getMainLooper())
+    }
+
+    fun stopTracking() {
+        locationCallback?.let { fusedClient.removeLocationUpdates(it) }
+    }
+}
+```
+
+--------------------------------------------------------------------------------
+2.5 NOTIFICATION SNIFFER & THREAT INTERCEPTOR
+--------------------------------------------------------------------------------
+File: NotificationMonitorService.kt
+```kotlin
+package com.childguard.agent.services
+
+import android.service.notification.NotificationListenerService
+import android.service.notification.StatusBarNotification
+import com.childguard.agent.network.MqttBridge
+import kotlinx.coroutines.*
+import org.json.JSONObject
+import java.util.regex.Pattern
+
+class NotificationMonitorService : NotificationListenerService() {
+
+    private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private lateinit var mqttBridge: MqttBridge
+
+    // Threat detection rules for harassment, predators, and self-harm keywords
+    private val threatPatterns = listOf(
+        Pattern.compile("\b(suicide|kill yourself|hurt you|die|hate you)\b", Pattern.CASE_INSENSITIVE),
+        Pattern.compile("\b(meet alone|secret place|send photo|nude|don't tell)\b", Pattern.CASE_INSENSITIVE)
+    )
+
+    override fun onCreate() {
+        super.onCreate()
+        mqttBridge = MqttBridge(this)
+        scope.launch { mqttBridge.connect() }
+    }
+
+    override fun onNotificationPosted(sbn: StatusBarNotification?) {
+        val sbnNotNull = sbn ?: return
+        val packageName = sbnNotNull.packageName
+
+        // Monitored apps
+        val monitoredApps = setOf(
+            "com.whatsapp", 
+            "com.instagram.android", 
+            "org.telegram.messenger", 
+            "com.google.android.apps.messaging"
+        )
+        if (!monitoredApps.contains(packageName)) return
+
+        val extras = sbnNotNull.notification.extras
+        val title = extras.getString("android.title") ?: "Unknown Contact"
+        val text = extras.getCharSequence("android.text")?.toString() ?: ""
+
+        if (text.isEmpty()) return
+
+        for (pattern in threatPatterns) {
+            if (pattern.matcher(text).find()) {
+                dispatchSecurityAlert(packageName, title, text, "CRITICAL_THREAT_KEYWORD")
+                break
+            }
+        }
+    }
+
+    private fun dispatchSecurityAlert(pkg: String, sender: String, content: String, reason: String) {
+        scope.launch {
+            val alert = JSONObject().apply {
+                put("type", "CHAT_SECURITY_ALARM")
+                put("severity", "HIGH")
+                put("app_package", pkg)
+                put("sender", sender)
+                put("snippet", content.take(100))
+                put("trigger", reason)
+                put("timestamp", System.currentTimeMillis())
+            }
+            mqttBridge.publishAlert(alert)
+        }
+    }
+
+    override fun onDestroy() {
+        scope.cancel()
+        mqttBridge.disconnect()
+        super.onDestroy()
+    }
+}
+```
+
+--------------------------------------------------------------------------------
+2.6 APP LIMITS & INSTANT LOCK ENFORCER (UsageManager.kt)
+--------------------------------------------------------------------------------
+```kotlin
+package com.childguard.agent.usage
+
+import android.app.admin.DevicePolicyManager
+import android.app.usage.UsageStatsManager
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import com.childguard.agent.receivers.GuardDeviceAdminReceiver
+
+class UsageManager(private val context: Context) {
+
+    private val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+    private val devicePolicyManager = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+    private val adminComponent = ComponentName(context, GuardDeviceAdminReceiver::class.java)
+
+    private val restrictedPackages = setOf("com.zhiliaoapp.musically", "com.instagram.android", "com.snapchat.android")
+
+    fun getCurrentForegroundApp(): String? {
+        val now = System.currentTimeMillis()
+        val stats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, now - 1000 * 60, now)
+        return stats?.maxByOrNull { it.lastTimeUsed }?.packageName
+    }
+
+    fun isAppRestricted(pkg: String): Boolean {
+        return restrictedPackages.contains(pkg)
+    }
+
+    fun enforceAppBlock(pkg: String) {
+        val homeIntent = Intent(Intent.ACTION_MAIN).apply {
+            addCategory(Intent.CATEGORY_HOME)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        context.startActivity(homeIntent)
+    }
+
+    fun lockDeviceImmediately() {
+        if (devicePolicyManager.isAdminActive(adminComponent)) {
+            devicePolicyManager.lockNow()
+        }
+    }
+}
+```
+
+--------------------------------------------------------------------------------
+2.7 LOCAL ENCRYPTED ROOM DATABASE (EncryptedAppDatabase.kt)
+--------------------------------------------------------------------------------
+```kotlin
+package com.childguard.agent.data
+
+import androidx.room.*
+import android.content.Context
+import net.sqlcipher.database.SupportFactory
+
+@Entity(tableName = "telemetry_queue")
+data class TelemetryRecord(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @ColumnInfo(name = "topic") val topic: String,
+    @ColumnInfo(name = "payload") val payload: String,
+    @ColumnInfo(name = "created_at") val createdAt: Long = System.currentTimeMillis()
+)
+
+@Dao
+interface TelemetryDao {
+    @Insert
+    suspend fun insertRecord(record: TelemetryRecord)
+
+    @Query("SELECT * FROM telemetry_queue ORDER BY created_at ASC LIMIT 50")
+    suspend fun getPendingBatch(): List<TelemetryRecord>
+
+    @Delete
+    suspend fun deleteBatch(records: List<TelemetryRecord>)
+}
+
+@Database(entities = [TelemetryRecord::class], version = 1, exportSchema = false)
+abstract class EncryptedAppDatabase : RoomDatabase() {
+    abstract fun telemetryDao(): TelemetryDao
+
+    companion object {
+        @Volatile private var INSTANCE: EncryptedAppDatabase? = null
+
+        fun getInstance(context: Context, passphrase: ByteArray): EncryptedAppDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val factory = SupportFactory(passphrase)
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    EncryptedAppDatabase::class.java,
+                    "childguard_encrypted.db"
+                ).openHelperFactory(factory).build()
+                INSTANCE = instance
+                instance
+            }
+        }
+    }
+}
+```
+
+--------------------------------------------------------------------------------
+2.8 MQTT REAL-TIME BRIDGE (MqttBridge.kt)
+--------------------------------------------------------------------------------
+```kotlin
+package com.childguard.agent.network
+
+import android.content.Context
+import org.eclipse.paho.client.mqttv3.*
+import org.json.JSONObject
+
+class MqttBridge(private val context: Context) {
+
+    private val brokerUri = "ssl://broker.childguard.internal:8883"
+    private val deviceId = "child_dev_99182"
+    private var client: MqttAsyncClient? = null
+
+    fun connect() {
+        try {
+            client = MqttAsyncClient(brokerUri, deviceId, null)
+            val options = MqttConnectOptions().apply {
+                isCleanSession = false
+                isAutomaticReconnect = true
+                keepAliveInterval = 60
+                userName = deviceId
+                password = "client_signed_jwt_token".toCharArray()
+            }
+
+            client?.setCallback(object : MqttCallbackExtended {
+                override fun connectComplete(reconnect: Boolean, serverURI: String?) {
+                    subscribeToParentCommands()
+                }
+                override fun connectionLost(cause: Throwable?) {}
+                override fun messageArrived(topic: String?, message: MqttMessage?) {
+                    handleIncomingCommand(topic, message)
+                }
+                override fun deliveryComplete(token: IMqttDeliveryToken?) {}
+            })
+
+            client?.connect(options)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun subscribeToParentCommands() {
+        client?.subscribe("devices/$deviceId/commands", 1)
+    }
+
+    private fun handleIncomingCommand(topic: String?, message: MqttMessage?) {
+        val payload = String(message?.payload ?: return)
+        val json = JSONObject(payload)
+        val action = json.optString("action")
+        
+        if (action == "LOCK_DEVICE") {
+            val usageManager = com.childguard.agent.usage.UsageManager(context)
+            usageManager.lockDeviceImmediately()
+        }
+    }
+
+    fun publishLocation(data: JSONObject) {
+        if (client?.isConnected == true) {
+            val message = MqttMessage(data.toString().toByteArray()).apply { qos = 0 }
+            client?.publish("devices/$deviceId/telemetry/location", message)
+        }
+    }
+
+    fun publishAlert(alert: JSONObject) {
+        if (client?.isConnected == true) {
+            val message = MqttMessage(alert.toString().toByteArray()).apply { qos = 1 }
+            client?.publish("devices/$deviceId/alerts/safety", message)
+        }
+    }
+
+    fun disconnect() {
+        try {
+            client?.disconnect()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+}
+```
+
+================================================================================
+SECTION 3: PHASE 1 - CLOUD BACKEND & BROKER INFRASTRUCTURE
+================================================================================
+
+3.1 POSTGRESQL + POSTGIS SPATIAL SCHEMA (schema.sql)
+--------------------------------------------------------------------------------
+```sql
+CREATE EXTENSION IF NOT EXISTS postgis;
+
+CREATE TABLE parents (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    full_name VARCHAR(128) NOT NULL,
+    email VARCHAR(256) UNIQUE NOT NULL,
+    phone_number VARCHAR(32) NOT NULL,
+    password_hash VARCHAR(256) NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE children (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    parent_id UUID NOT NULL REFERENCES parents(id) ON DELETE CASCADE,
+    device_uid VARCHAR(128) UNIQUE NOT NULL,
+    first_name VARCHAR(64) NOT NULL,
+    age_years INT NOT NULL CHECK (age_years <= 18),
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE geofences (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    child_id UUID NOT NULL REFERENCES children(id) ON DELETE CASCADE,
+    zone_name VARCHAR(64) NOT NULL,
+    is_safe_zone BOOLEAN DEFAULT TRUE,
+    boundary GEOMETRY(Polygon, 4326) NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_geofences_spatial ON geofences USING GIST(boundary);
+
+CREATE TABLE location_history (
+    id BIGSERIAL PRIMARY KEY,
+    child_id UUID NOT NULL REFERENCES children(id) ON DELETE CASCADE,
+    location GEOMETRY(Point, 4326) NOT NULL,
+    speed FLOAT DEFAULT 0.0,
+    recorded_at TIMESTAMPTZ NOT NULL
+);
+CREATE INDEX idx_location_history_coords ON location_history USING GIST(location);
+CREATE INDEX idx_location_child_time ON location_history(child_id, recorded_at DESC);
+
+CREATE TABLE security_alerts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    child_id UUID NOT NULL REFERENCES children(id) ON DELETE CASCADE,
+    alert_type VARCHAR(64) NOT NULL,
+    severity VARCHAR(16) NOT NULL,
+    payload JSONB NOT NULL,
+    acknowledged_by_parent BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_alerts_child ON security_alerts(child_id, acknowledged_by_parent);
+```
+
+--------------------------------------------------------------------------------
+3.2 GOLANG TELEMETRY INGESTOR & ALERT PROCESSOR (main.go)
+--------------------------------------------------------------------------------
+```go
+package main
+
+import (
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	mqtt "github.com/eclipse/paho.mqtt.golang"
+	_ "github.com/lib/pq"
+)
+
+type LocationPayload struct {
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	Speed     float64 `json:"speed"`
+	Timestamp int64   `json:"timestamp"`
+}
+
+type SafetyAlertPayload struct {
+	Type       string `json:"type"`
+	Severity   string `json:"severity"`
+	AppPackage string `json:"app_package"`
+	Sender     string `json:"sender"`
+	Snippet    string `json:"snippet"`
+	Trigger    string `json:"trigger"`
+	Timestamp  int64  `json:"timestamp"`
+}
+
+var db *sql.DB
+
+func main() {
+	var err error
+	connStr := "postgres://postgres:secure_db_pass@localhost:5432/childguard?sslmode=disable"
+	db, err = sql.Open("postgres", connStr)
+	if err != nil {
+		log.Fatalf("Database connection failure: %v", err)
+	}
+	defer db.Close()
+
+	mqttOpts := mqtt.NewClientOptions().
+		AddBroker("ssl://broker.childguard.internal:8883").
+		SetClientID("cloud_ingestor_worker_01").
+		SetCleanSession(false).
+		SetAutoReconnect(true)
+
+	mqttClient := mqtt.NewClient(mqttOpts)
+	if token := mqttClient.Connect(); token.Wait() && token.Error() != nil {
+		log.Fatalf("MQTT Connection error: %v", token.Error())
+	}
+
+	mqttClient.Subscribe("devices/+/telemetry/location", 0, func(c mqtt.Client, m mqtt.Message) {
+		go processLocationMessage(m.Topic(), m.Payload())
+	})
+
+	mqttClient.Subscribe("devices/+/alerts/safety", 1, func(c mqtt.Client, m mqtt.Message) {
+		go processAlertMessage(m.Topic(), m.Payload())
+	})
+
+	log.Println("ChildGuard Ingestion Pipeline Running.")
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+	<-sigChan
+	mqttClient.Disconnect(250)
+}
+
+func processLocationMessage(topic string, data []byte) {
+	var payload LocationPayload
+	if err := json.Unmarshal(data, &payload); err != nil {
+		return
+	}
+
+	var deviceUid string
+	fmt.Sscanf(topic, "devices/%s/telemetry/location", &deviceUid)
+
+	query := `
+		INSERT INTO location_history (child_id, location, speed, recorded_at)
+		SELECT id, ST_SetSRID(ST_MakePoint($1, $2), 4326), $3, $4
+		FROM children WHERE device_uid = $5;
+	`
+	t := time.UnixMilli(payload.Timestamp)
+	_, err := db.Exec(query, payload.Longitude, payload.Latitude, payload.Speed, t, deviceUid)
+	if err != nil {
+		log.Printf("Failed to record location: %v", err)
+	}
+}
+
+func processAlertMessage(topic string, data []byte) {
+	var alert SafetyAlertPayload
+	if err := json.Unmarshal(data, &alert); err != nil {
+		return
+	}
+
+	var deviceUid string
+	fmt.Sscanf(topic, "devices/%s/alerts/safety", &deviceUid)
+
+	query := `
+		INSERT INTO security_alerts (child_id, alert_type, severity, payload)
+		SELECT id, $1, $2, $3 FROM children WHERE device_uid = $4;
+	`
+	_, err := db.Exec(query, alert.Type, alert.Severity, string(data), deviceUid)
+	if err != nil {
+		log.Printf("Failed to store safety alert: %v", err)
+	}
+}
+```
+
+================================================================================
+SECTION 4: PHASE 2 - REAL-TIME SOCIAL MEDIA & VIDEO FILTERING ENGINE
+================================================================================
+
+4.1 CONFIGURATION (res/xml/accessibility_service_config.xml)
+--------------------------------------------------------------------------------
+```xml
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeWindowStateChanged|typeWindowContentChanged"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:accessibilityFlags="flagDefault|flagRetrieveInteractiveWindows"
+    android:canRetrieveWindowContent="true"
+    android:canPerformGestures="true"
+    android:notificationTimeout="100"
+    android:packageNames="com.instagram.android,com.google.android.youtube,com.zhiliaoapp.musically" />
+```
+
+--------------------------------------------------------------------------------
+4.2 SOCIAL FEED INSPECTOR SERVICE (SocialFeedInspectorService.kt)
+--------------------------------------------------------------------------------
+```kotlin
+package com.childguard.agent.services
+
+import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.GestureDescription
+import android.graphics.Path
+import android.graphics.PixelFormat
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.WindowManager
+import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
+import android.widget.TextView
+import com.childguard.agent.R
+import java.util.Locale
+
+class SocialFeedInspectorService : AccessibilityService() {
+
+    private var overlayView: View? = null
+    private var windowManager: WindowManager? = null
+    private var isOverlayShowing = false
+
+    private val restrictedKeywords = setOf(
+        "porn", "nsfw", "18+", "nude", "blood", "beheading", "murder", 
+        "weapon", "drugs", "vape", "cigarette", "kill", "casino", "betting"
+    )
+
+    override fun onServiceConnected() {
+        super.onServiceConnected()
+        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+        createBlurOverlay()
+    }
+
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+        val rootNode = rootInActiveWindow ?: return
+
+        val visibleText = StringBuilder()
+        traverseNodeTree(rootNode, visibleText)
+
+        val fullContent = visibleText.toString().lowercase(Locale.ROOT)
+
+        for (keyword in restrictedKeywords) {
+            if (fullContent.contains(keyword)) {
+                triggerProtectionIntervention(keyword)
+                break
+            }
+        }
+    }
+
+    private fun traverseNodeTree(node: AccessibilityNodeInfo?, builder: StringBuilder) {
+        if (node == null) return
+        if (node.text != null && node.text.isNotEmpty()) {
+            builder.append(node.text).append(" ")
+        }
+        if (node.contentDescription != null && node.contentDescription.isNotEmpty()) {
+            builder.append(node.contentDescription).append(" ")
+        }
+        for (i in 0 until node.childCount) {
+            traverseNodeTree(node.getChild(i), builder)
+        }
+    }
+
+    private fun triggerProtectionIntervention(triggerReason: String) {
+        if (isOverlayShowing) return
+        showOverlayBanner("Inappropriate Content Masked: Found $triggerReason")
+        executeSkipGesture()
+    }
+
+    private fun executeSkipGesture() {
+        val metrics = resources.displayMetrics
+        val screenHeight = metrics.heightPixels
+        val screenWidth = metrics.widthPixels
+
+        // Programmatic swipe-up to skip inappropriate reel or short
+        val path = Path().apply {
+            moveTo(screenWidth / 2f, screenHeight * 0.8f)
+            lineTo(screenWidth / 2f, screenHeight * 0.2f)
+        }
+
+        val gesture = GestureDescription.Builder()
+            .addStroke(GestureDescription.StrokeDescription(path, 0, 250))
+            .build()
+
+        dispatchGesture(gesture, object : GestureResultCallback() {
+            override fun onCompleted(gestureDescription: GestureDescription?) {
+                overlayView?.postDelayed({ hideOverlay() }, 1000)
+            }
+        }, null)
+    }
+
+    private fun createBlurOverlay() {
+        val inflater = LayoutInflater.from(this)
+        overlayView = inflater.inflate(R.layout.layout_safety_overlay, null)
+
+        val params = WindowManager.LayoutParams(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+            PixelFormat.TRANSLUCENT
+        ).apply {
+            gravity = Gravity.CENTER
+        }
+
+        overlayView?.visibility = View.GONE
+        windowManager?.addView(overlayView, params)
+    }
+
+    private fun showOverlayBanner(message: String) {
+        overlayView?.let { view ->
+            val txtMsg = view.findViewById<TextView>(R.id.txtWarning)
+            txtMsg.text = message
+            view.visibility = View.VISIBLE
+            isOverlayShowing = true
+        }
+    }
+
+    private fun hideOverlay() {
+        overlayView?.visibility = View.GONE
+        isOverlayShowing = false
+    }
+
+    override fun onInterrupt() {}
+
+    override fun onDestroy() {
+        if (overlayView != null) {
+            windowManager?.removeView(overlayView)
+        }
+        super.onDestroy()
+    }
+}
+```
+
+--------------------------------------------------------------------------------
+4.3 VISUAL MASK BANNER (res/layout/layout_safety_overlay.xml)
+--------------------------------------------------------------------------------
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FA111827">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/ic_safety_shield"
+            android:tint="#EF4444" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Safe Guard Active"
+            android:textColor="#FFFFFF"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtWarning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="Content was detected as inappropriate and auto-skipped."
+            android:textColor="#D1D5DB"
+            android:textSize="14sp" />
+    </LinearLayout>
+</FrameLayout>
+```
+
+================================================================================
+SECTION 5: PHASE 3 - CROSS-PLATFORM DESKTOP SURVEILLANCE AGENT (WINDOWS PC)
+================================================================================
+
+5.1 WIN32 ACTIVE WINDOW INSPECTOR & PROCESS DAEMON (desktop_agent.py)
+--------------------------------------------------------------------------------
+```python
+import sys
+import time
+import ctypes
+import json
+import paho.mqtt.client as mqtt
+
+user32 = ctypes.windll.user32
+kernel32 = ctypes.windll.kernel32
+
+RESTRICTED_KEYWORDS = ["gambling", "casino", "torrent", "free movie", "xxx", "porn"]
+BLACK_LISTED_PROCESSES = ["tor.exe", "bittorrent.exe", "cheatengine.exe"]
+
+BROKER_ADDRESS = "broker.childguard.internal"
+PORT = 8883
+DEVICE_ID = "desktop_pc_agent_001"
+
+def get_foreground_window_title():
+    hwnd = user32.GetForegroundWindow()
+    length = user32.GetWindowTextLengthW(hwnd)
+    buff = ctypes.create_unicode_buffer(length + 1)
+    user32.GetWindowTextW(hwnd, buff, length + 1)
+    return buff.value
+
+def on_connect(client, userdata, flags, rc):
+    print(f"[Desktop Agent] Connected to broker with result code: {rc}")
+    client.subscribe(f"devices/{DEVICE_ID}/commands")
+
+def on_message(client, userdata, msg):
+    try:
+        command = json.loads(msg.payload.decode())
+        if command.get("action") == "LOCK_STATION":
+            # Force Windows lock session immediately
+            ctypes.windll.user32.LockWorkStation()
+    except Exception as e:
+        print(f"Command execution error: {e}")
+
+def main():
+    client = mqtt.Client(client_id=DEVICE_ID)
+    client.on_connect = on_connect
+    client.on_message = on_message
+    
+    try:
+        client.connect(BROKER_ADDRESS, PORT, 60)
+        client.loop_start()
+    except Exception as ex:
+        print(f"Warning: Cloud connection offline, running locally: {ex}")
+
+    print("[ChildGuard Desktop] Daemon listening on system handles...")
+    last_reported_title = ""
+
+    while True:
+        try:
+            current_title = get_foreground_window_title().strip()
+            
+            if current_title and current_title != last_reported_title:
+                last_reported_title = current_title
+                lower_title = current_title.lower()
+
+                for kw in RESTRICTED_KEYWORDS:
+                    if kw in lower_title:
+                        alert_payload = {
+                            "type": "DESKTOP_VIOLATION_ALARM",
+                            "severity": "HIGH",
+                            "window_title": current_title,
+                            "trigger_keyword": kw,
+                            "timestamp": int(time.time() * 1000)
+                        }
+                        client.publish(f"devices/{DEVICE_ID}/alerts/safety", json.dumps(alert_payload), qos=1)
+                        
+                        # Minimize the restricted window
+                        hwnd = user32.GetForegroundWindow()
+                        user32.ShowWindow(hwnd, 6) # SW_MINIMIZE = 6
+                        break
+
+            time.sleep(1.5)
+        except KeyboardInterrupt:
+            break
+
+    client.loop_stop()
+
+if __name__ == "__main__":
+    main()
+```
+
+================================================================================
+SECTION 6: PHASE 4 - PARENT CONTROLLER APPLICATION (FLUTTER / DART)
+================================================================================
+
+6.1 COMPLETE PARENT CONTROLLER INTERFACE (lib/main.dart)
+--------------------------------------------------------------------------------
+```dart
+import 'package:flutter/material.dart';
+import 'package:mqtt_client/mqtt_client.dart';
+import 'package:mqtt_client/mqtt_server_client.dart';
+import 'dart:convert';
+
+void main() {
+  runApp(const ChildGuardParentApp());
+}
+
+class ChildGuardParentApp extends StatelessWidget {
+  const ChildGuardParentApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'ChildGuard Parent Hub',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        primaryColor: const Color(0xFF3B82F6),
+        scaffoldBackgroundColor: const Color(0xFF0F172A),
+      ),
+      home: const ParentDashboardScreen(),
+    );
+  }
+}
+
+class ParentDashboardScreen extends StatefulWidget {
+  const ParentDashboardScreen({super.key});
+
+  @override
+  State<ParentDashboardScreen> createState() => _ParentDashboardScreenState();
+}
+
+class _ParentDashboardScreenState extends State<ParentDashboardScreen> {
+  final String childDeviceId = "child_dev_99182";
+  late MqttServerClient client;
+  
+  String connectionStatus = "Disconnected";
+  String lastLocation = "Fetching GPS coordinates...";
+  List<Map<String, dynamic>> threatFeed = [];
+
+  @override
+  void initState() {
+    super.initState();
+    initMqtt();
+  }
+
+  Future<void> initMqtt() async {
+    client = MqttServerClient.withPort('broker.childguard.internal', 'parent_client_ui', 8883);
+    client.secure = true;
+    client.keepAlivePeriod = 30;
+    client.autoReconnect = true;
+
+    try {
+      await client.connect();
+      setState(() => connectionStatus = "Connected to Child Device");
+
+      client.subscribe("devices/$childDeviceId/telemetry/location", MqttQos.atMostOnce);
+      client.subscribe("devices/$childDeviceId/alerts/safety", MqttQos.atLeastOnce);
+
+      client.updates!.listen((List<MqttReceivedMessage<MqttMessage>> messages) {
+        final recMessage = messages[0].payload as MqttPublishMessage;
+        final rawJson = const Utf8Decoder().convert(recMessage.payload.message);
+        final data = jsonDecode(rawJson);
+
+        if (messages[0].topic.contains("location")) {
+          setState(() {
+            lastLocation = "Lat: ${data['latitude']}, Long: ${data['longitude']} (Speed: ${data['speed']} m/s)";
+          });
+        } else if (messages[0].topic.contains("alerts")) {
+          setState(() {
+            threatFeed.insert(0, data);
+          });
+        }
+      });
+    } catch (e) {
+      setState(() => connectionStatus = "Connection Failed: $e");
+    }
+  }
+
+  void dispatchRemoteLockCommand() {
+    final builder = MqttClientPayloadBuilder();
+    final payload = jsonEncode({
+      "action": "LOCK_DEVICE",
+      "timestamp": DateTime.now().millisecondsSinceEpoch,
+    });
+    builder.addString(payload);
+    client.publishMessage("devices/$childDeviceId/commands", MqttQos.atLeastOnce, builder.payload!);
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Remote Lock Signal Broadcasted Successfully')),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('ChildGuard Security Monitor'),
+        backgroundColor: const Color(0xFF1E293B),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.lock, color: Colors.redAccent),
+            tooltip: 'Remote Instant Lock',
+            onPressed: dispatchRemoteLockCommand,
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Card(
+              color: const Color(0xFF1E293B),
+              child: ListTile(
+                leading: const Icon(Icons.shield, color: Colors.blueAccent),
+                title: Text("Child Device: $childDeviceId"),
+                subtitle: Text("Status: $connectionStatus\n$lastLocation"),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text("Real-Time Safety Threat Feed",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+            const SizedBox(height: 8),
+            Expanded(
+              child: threatFeed.isEmpty
+                  ? const Center(child: Text("No threats detected. All systems green."))
+                  : ListView.builder(
+                      itemCount: threatFeed.length,
+                      itemBuilder: (ctx, idx) {
+                        final item = threatFeed[idx];
+                        return Card(
+                          color: const Color(0xFF2D1515),
+                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          child: ListTile(
+                            leading: const Icon(Icons.warning, color: Colors.redAccent),
+                            title: Text("${item['type']} (${item['severity']})"),
+                            subtitle: Text("Trigger: ${item['trigger']}\nSnippet: ${item['snippet']}"),
+                            trailing: Text(
+                              DateTime.fromMillisecondsSinceEpoch(item['timestamp'] ?? 0).toLocal().toString().split('.')[0],
+                              style: const TextStyle(fontSize: 10, color: Colors.grey),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+================================================================================
+END OF SPECIFICATION FILE
+================================================================================
