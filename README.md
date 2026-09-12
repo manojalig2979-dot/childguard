@@ -5,10 +5,11 @@
 
 [![CI Ecosystem Pipeline](https://github.com/manojalig2979-dot/childguard/actions/workflows/ci.yml/badge.svg)](https://github.com/manojalig2979-dot/childguard/actions/workflows/ci.yml)
 [![Build Android APK](https://github.com/manojalig2979-dot/childguard/actions/workflows/build_apk.yml/badge.svg)](https://github.com/manojalig2979-dot/childguard/actions/workflows/build_apk.yml)
+[![Build Flutter Parent APK](https://github.com/manojalig2979-dot/childguard/actions/workflows/build_parent_apk.yml/badge.svg)](https://github.com/manojalig2979-dot/childguard/actions/workflows/build_parent_apk.yml)
 [![Deploy Web Command Center](https://github.com/manojalig2979-dot/childguard/actions/workflows/deploy_pages.yml/badge.svg)](https://github.com/manojalig2979-dot/childguard/actions/workflows/deploy_pages.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**[🌐 Live Web Showcase](https://manojalig2979-dot.github.io/childguard/)** • **[📱 Download Android APK](https://manojalig2979-dot.github.io/childguard/downloads/app-debug.apk)** • **[📦 GitHub Repository](https://github.com/manojalig2979-dot/childguard.git)**
+**[🌐 Live Web Showcase](https://manojalig2979-dot.github.io/childguard/)** • **[📱 Download Child APK](https://manojalig2979-dot.github.io/childguard/downloads/app-debug.apk)** • **[📲 Parent App APK](https://github.com/manojalig2979-dot/childguard/actions/workflows/build_parent_apk.yml)** • **[📦 GitHub Repository](https://github.com/manojalig2979-dot/childguard.git)**
 
 </div>
 
